@@ -1,0 +1,23 @@
+﻿<button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<h2>Send Notification to All Users</h2>
+
+<div class="alert alert-warning">
+    <strong>Warning:</strong> This will send a notification to ALL users in the system.
+</div>
+
+<form method="post">
+    <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" required placeholder="e.g., System Maintenance" />
+    </div>
+
+    <div class="form-group mt-3">
+        <label>Message</label>
+        <textarea name="message" class="form-control" rows="5" required placeholder="Enter notification details..."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-danger mt-3">Send to All Users</button>
+    <a href="@Url.Action("Dashboard")" class="btn btn-secondary mt-3">Cancel</a>
+</form>

@@ -1,0 +1,58 @@
+﻿@model List<Complaint>
+@{
+}
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<h2 class="text-center mb-5">List of Complaints</h2>
+
+<div class="row mb-5">
+    <div class="col">
+        <a class="btn btn-primary" asp-controller="Complaints" asp-action="Create">New Complaint</a>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            @* <th>Title</th> *@
+            <th>ID</th>
+            <th>Complaint Type</th>
+            <th>Description</th>
+            <th>Address</th>
+            <th>Image</th>
+            <th>Created At</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var complaint in Model)
+        {
+            <tr>
+                <td>@complaint.Id</td>
+                <td>@complaint.Type</td>
+                <td>@complaint.Description</td>
+                <td>@complaint.Title</td>
+                <td>
+                    @if(!string.IsNullOrEmpty(complaint.ImagePath))
+                    {
+                        <img src="/Complaint/@complaint.ImagePath" width="100" />
+                    }
+                    else
+                    {
+                        <span>No Image Selected</span>
+                    }
+                </td>
+                <td>@complaint.CreatedAt.ToString("MM/dd/yyyy")</td>
+                <td>@complaint.Status</td>
+                <td style="white-space:nowrap">
+                    <a class="btn btn-primary btn-sm" asp-controller="Complaints" asp-action="Edit" asp-route-id="@complaint.Id">Edit</a>
+                    <a class="btn btn-danger btn-sm" asp-controller="Complaints" asp-action="Delete" asp-route-id="@complaint.Id" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

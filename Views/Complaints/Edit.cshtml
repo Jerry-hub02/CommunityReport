@@ -1,0 +1,257 @@
+﻿@using CommunityReport.Models.Domain.DTO
+@model ComplaintDto
+@{
+}
+<style>
+    .complaint-container {
+        max-width: 800px;
+        margin: 30px auto;
+    }
+
+    .complaint-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .complaint-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+
+        .complaint-header i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+    .complaint-body {
+        padding: 40px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        font-size: 1.05rem;
+    }
+
+        .form-label i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 14px 18px;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #FF8E53;
+            box-shadow: 0 0 0 0.2rem rgba(255, 142, 83, 0.25);
+        }
+
+    textarea.form-control {
+        min-height: 130px;
+    }
+
+    .current-image {
+        max-width: 250px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        margin-bottom: 15px;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+    .file-input-label {
+        display: block;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 142, 83, 0.4);
+        }
+
+    .file-name {
+        margin-top: 12px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 16px 45px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 142, 83, 0.4);
+        }
+
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        color: white;
+        padding: 16px 45px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+    .info-box {
+        background: #667eea;
+        border-left: 4px solid #667eea;
+        padding: 18px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+
+    .optional-badge {
+        background: #667eea;
+        color: #000;
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+
+    .mb-5 {
+        margin-bottom: 2rem;
+    }
+</style>
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<div class="complaint-container">
+
+    <div class="complaint-card">
+        <div class="complaint-header">
+            <i class="bi bi-pencil-square"></i>
+            <h2 class="mb-0">Edit Complaint</h2>
+            <p class="mb-0">Update your complaint information</p>
+        </div>
+
+        <div class="complaint-body">
+            <div class="info-box" style="color: white">
+                <strong style="color: white"><i class="bi bi-info-circle" style="color: white"></i> Complaint ID:</strong> @ViewData["ComplaintId"]
+                <br />
+                <strong style="color: white"><i class="bi bi-calendar" style="color: white"></i> Created:</strong> @ViewData["CreatedAt"]
+            </div>
+
+            <form method="post" enctype="multipart/form-data" asp-action="Edit">
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-tag-fill"></i> Complaint Type
+                    </label>
+                    <select asp-for="Type" class="form-select" required>
+                        <option value="">Select Type</option>
+                        <option value="Pothole">Pothole</option>
+                        <option value="Sewage">Sewage</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-chat-left-text-fill"></i> Description
+                    </label>
+                    <textarea asp-for="Description" class="form-control" required></textarea>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-geo-alt-fill"></i> Address
+                    </label>
+                    <input type="text" asp-for="Title" class="form-control" required />
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-image-fill"></i> Image
+                        <span class="optional-badge">Optional</span>
+                    </label>
+
+                    @if (!string.IsNullOrEmpty(ViewData["ImagePath"]?.ToString()))
+                    {
+                        <div class="mb-3">
+                            <p class="text-muted mb-2"><strong>Current Image:</strong></p>
+                            <img src="~/Complaint/@ViewData["ImagePath"]" alt="Current Image" class="current-image" />
+                        </div>
+                    }
+
+                    <div class="file-input-wrapper">
+                        <input type="file" asp-for="ImageFile" id="imageFile" accept="image/*" onchange="updateFileName(this)" />
+                        <label for="imageFile" class="file-input-label">
+                            <i class="bi bi-cloud-upload"></i> Choose New Image
+                        </label>
+                    </div>
+                    <div id="fileName" class="file-name" style="display:none;"></div>
+                    <small class="text-muted d-block mt-2">Leave empty to keep current image</small>
+                </div>
+
+                <div class="d-flex gap-3 justify-content-center mt-5 pt-3">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="bi bi-check-circle"></i> Update Complaint
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-cancel">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateFileName(input) {
+        var fileName = document.getElementById('fileName');
+        if (input.files && input.files.length > 0) {
+            fileName.textContent = '📁 New: ' + input.files[0].name;
+            fileName.style.display = 'block';
+        } else {
+            fileName.style.display = 'none';
+        }
+    }
+</script>

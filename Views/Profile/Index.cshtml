@@ -1,0 +1,83 @@
+﻿@using CommunityReport.Models.Domain
+
+@model ApplicationUser
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<div class="container mt-4">
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="bi bi-person-circle"></i> My Profile</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="bi bi-check-circle"></i> @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-x-circle"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="bi bi-person-circle" style="font-size: 8rem; color: #667eea;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h4>Account Information</h4>
+                            <hr />
+
+                            <div class="mb-3">
+                                <label class="text-muted">Username</label>
+                                <p class="fs-5"><strong>@Model.UserName</strong></p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted">Email</label>
+                                <p class="fs-5"><strong>@Model.Email</strong></p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted">Phone Number</label>
+                                <p class="fs-5"><strong>@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</strong></p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-muted">Account Created</label>
+                                <p class="fs-5"><strong>Member since registration</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Edit")" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Edit Profile
+                        </a>
+                        <a href="@Url.Action("ChangePassword")" class="btn btn-warning">
+                            <i class="bi bi-key"></i> Change Password
+                        </a>
+                        <a href="@Url.Action("DeleteAccount")" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

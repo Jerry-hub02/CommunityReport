@@ -1,0 +1,52 @@
+﻿@model Complaint
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<h2>Change Complaint Status</h2>
+<div class="card">
+    <div class="card-body">
+        <h5>Complaint: @Model.Title</h5>
+        <p><strong>Type:</strong> @Model.Type</p>
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Current Status:</strong> <span class="badge bg-warning">@Model.Status</span></p>
+        <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+        
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <p><strong>Image:</strong></p>
+            <img src="~/Complaint/@Model.ImagePath" alt="Complaint Image" style="max-width: 400px;" />
+        }
+    </div>
+</div>
+
+<form method="post" class="mt-4">
+    <div class="form-group">
+        <label>New Status</label>
+        <select name="status" class="form-control" required>
+            <option value="Submitted">Submitted</option>
+            <option value="Pending">Pending</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary mt-3">Update Status</button>
+    <a href="@Url.Action("Complaints")" class="btn btn-secondary mt-3">Cancel</a>
+</form>
+<script>
+    // Set the selected option based on current status
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentStatus = '@Model.Status';
+        var selectElement = document.querySelector('select[name="status"]');
+
+        for (var i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].value === currentStatus) {
+                selectElement.options[i].selected = true;
+                break;
+            }
+        }
+    });
+</script>

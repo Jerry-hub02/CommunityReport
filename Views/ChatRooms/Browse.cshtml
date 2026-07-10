@@ -1,0 +1,28 @@
+﻿<h2>Available Chat Rooms</h2>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Back to My Rooms</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.Name</td>
+                <td>@room.Description</td>
+                <td>
+                    <form method="post" action="@Url.Action("JoinRoom")" style="display:inline;">
+                        <input type="hidden" name="roomId" value="@room.Id" />
+                        <button type="submit" class="btn btn-success">Join</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

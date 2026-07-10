@@ -1,0 +1,224 @@
+﻿@using CommunityReport.Models.Domain
+
+@model ApplicationUser
+<style>
+    .profile-container {
+        max-width: 700px;
+        margin: 50px auto;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .profile-header i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .profile-body {
+        padding: 40px;
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 14px 18px;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .input-group-text {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-right: 8px;
+        border-radius: 10px 0 0 10px;
+        padding: 14px 18px;
+    }
+
+    .input-group .form-control {
+        margin-bottom: 1rem;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: white;
+        width: 100%;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1.1rem;
+        color: white;
+        width: 100%;
+        transition: all 0.3s;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+
+    .btn-cancel:hover {
+        background: #5a6268;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        font-weight: 500;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: #333;
+        font-weight: 500;
+    }
+
+    .alert i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+
+    .form-label {
+        margin-right: 8px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 12px;
+    }
+
+    .mb-5 {
+        margin-bottom: 2rem;
+    }
+</style>
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<div class="profile-container">
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <i class="bi bi-person-circle"></i>
+            <h2 class="mb-0">Edit Profile</h2>
+            <p class="mb-0">Update your account information</p>
+        </div>
+
+        <div class="profile-body">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    @TempData["Message"]
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    @TempData["Error"]
+                </div>
+            }
+
+            <form method="post" asp-action="Edit">
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-person"></i> Username
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person-fill text-primary"></i>
+                        </span>
+                        <input type="text" name="userName" class="form-control" value="@Model.UserName" required />
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-envelope"></i> Email
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-envelope-fill text-primary"></i>
+                        </span>
+                        <input type="email" name="email" class="form-control" value="@Model.Email" required />
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label">
+                        <i class="bi bi-telephone"></i> Phone Number
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-telephone-fill text-primary"></i>
+                        </span>
+                        <input type="tel" name="phoneNumber" class="form-control" value="@Model.PhoneNumber" placeholder="Optional"/>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-save">
+                        <i class="bi bi-check-circle"></i> Save Changes
+                    </button>
+                    <a href="@Url.Action("Index", "Profile")" class="btn btn-cancel">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

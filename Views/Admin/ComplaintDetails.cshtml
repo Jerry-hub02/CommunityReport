@@ -1,0 +1,54 @@
+﻿@model Complaint
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<h2>Complaint Details</h2>
+<div class="card">
+    <div class="card-header">
+        <h4>@Model.Title</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>ID:</strong> @Model.Id</p>
+                <p><strong>Type:</strong> @Model.Type</p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="badge
+                        @(Model.Status == "Pending" ? "bg-warning" :
+                          Model.Status == "Resolved" ? "bg-success" :
+                          Model.Status == "InProgress" ? "bg-info" : "bg-secondary")">
+                        @Model.Status
+                    </span>
+                </p>
+                <p><strong>Created:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>User Name:</strong> @ViewData["UserName"]</p>
+                <p><strong>User Email:</strong> @ViewData["UserEmail"]</p>
+                <p><strong>User ID:</strong> @Model.UserId</p>
+            </div>
+        </div>
+
+        <hr />
+
+        <h5>Description:</h5>
+        <p>@Model.Description</p>
+
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <h5>Attached Image:</h5>
+            <img src="~/Complaint/@Model.ImagePath" alt="Complaint Image" style="max-width: 100%; height: auto;" />
+        }
+    </div>
+    <div class="card-footer">
+        <a href="@Url.Action("ChangeStatus", new { id = Model.Id })" class="btn btn-warning">Change Status</a>
+        <a href="@Url.Action("SendNotification", new { complaintId = Model.Id })" class="btn btn-info">Send Notification to User</a>
+        <a href="@Url.Action("Complaints")" class="btn btn-secondary">Back to List</a>
+        <form method="post" action="@Url.Action("DeleteComplaint", new { id = Model.Id })" style="display:inline;"
+              onsubmit="return confirm('Are you sure you want to delete this complaint?');">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,172 @@
+﻿@model IEnumerable<Notification>
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<div class="container mt-4">
+    <h2>My Notifications</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You have no notifications.
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <button onclick="markAllAsRead()" class="btn btn-sm btn-secondary">
+                <i class="bi bi-check-all"></i> Mark All as Read
+            </button>
+        </div>
+
+        <div class="list-group">
+            @foreach (var notification in Model)
+            {
+                <div class="list-group-item @(!notification.IsRead ? "list-group-item-primary" : "")" id="notification-@notification.Id">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">
+                                @if (!notification.IsRead)
+                                {
+                                    <span class="badge bg-primary">New</span>
+                                }
+                                @notification.Title
+                            </h5>
+                            <p class="mb-1">@notification.Message</p>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> @notification.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")
+                                | Type: @notification.Type
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        @if (!notification.IsRead)
+                        {
+                            <button onclick="markAsRead(@notification.Id)" class="btn btn-sm btn-success">
+                                <i class="bi bi-check"></i> Mark as Read
+                            </button>
+                        }
+
+                        @if (notification.ComplaintId != null)
+                        {
+                            <a href="@Url.Action("Details", "Complaints", new { id = notification.ComplaintId })" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> View Complaint
+                            </a>
+                        }
+
+                        <button onclick="deleteNotification(@notification.Id)" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-3">
+        <a href="@Url.Action("Display", "Dashboard")" class="btn btn-secondary">
+            <i class="bi bi-house"></i> Back to Home
+        </a>
+    </div>
+</div>
+
+<script>
+    // Mark single notification as read
+    function markAsRead(id) {
+        fetch('@Url.Action("MarkAsRead", "Notifications")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the "New" badge and change background
+                    const notificationItem = document.getElementById('notification-' + id);
+                    notificationItem.classList.remove('list-group-item-primary');
+
+                    // Remove the "Mark as Read" button
+                    const button = notificationItem.querySelector('button[onclick*="markAsRead"]');
+                    if (button) {
+                        button.remove();
+                    }
+
+                    // Update bell icon count
+                    updateNotificationBadge();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to mark notification as read');
+            });
+    }
+
+    // Mark all notifications as read
+    function markAllAsRead() {
+        if (!confirm('Mark all notifications as read?')) {
+            return;
+        }
+
+        fetch('@Url.Action("MarkAllAsRead", "Notifications")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to mark all as read');
+            });
+    }
+
+    // Delete notification
+    function deleteNotification(id) {
+        if (!confirm('Delete this notification?')) {
+            return;
+        }
+
+        fetch('@Url.Action("Delete", "Notifications")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id
+        })
+            .then(response => {
+                if (response.ok) {
+                    const notificationItem = document.getElementById('notification-' + id);
+                    notificationItem.remove();
+
+                    // Update bell icon count
+                    updateNotificationBadge();
+
+                    // Check if there are no more notifications
+                    const remainingNotifications = document.querySelectorAll('.list-group-item').length;
+                    if (remainingNotifications === 0) {
+                        location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to delete notification');
+            });
+    }
+
+    // Update the bell badge count
+    function updateNotificationBadge() {
+        if (typeof updateNotificationCount === 'function') {
+            updateNotificationCount();
+        }
+    }
+</script>

@@ -1,0 +1,41 @@
+﻿<button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3><i class="bi bi-exclamation-triangle"></i> Delete Account</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <strong>Warning!</strong> This action cannot be undone. All your data including complaints, messages, and notifications will be permanently deleted.
+                    </div>
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form method="post" action="@Url.Action("DeleteAccountConfirm")" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This cannot be undone!');">
+                        <div class="form-group mb-3">
+                            <label>Enter your password to confirm</label>
+                            <input type="password" name="password" class="form-control" required />
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Delete My Account
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

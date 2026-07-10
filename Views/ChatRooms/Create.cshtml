@@ -1,0 +1,24 @@
+﻿@model CommunityReport.Models.ChatRoom
+
+<button onclick="history.back()" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back
+</button>
+<h2>Create New Chat Room</h2>
+<div class="text-danger" asp-validation-summary="All"></div>
+
+<form method="post" asp-action="Create" asp-controller="ChatRooms">
+    <div class="form-group">
+        <label>Room Name</label>
+        <input type="text" asp-for="Name" class="form-control" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

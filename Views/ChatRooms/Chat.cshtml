@@ -1,0 +1,293 @@
+﻿@using System.Security.Claims
+@{
+    var messages = ViewData["Messages"] as List<ChatMessage>;
+    var chatRoomId = ViewData["ChatRoomId"];
+    var chatRoomName = ViewData["ChatRoomName"];
+    var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+}
+
+<style>
+    .chat-container {
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #ffffff;
+    }
+    
+    .message-wrapper {
+        display: flex;
+        margin-bottom: 20px;
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .message-wrapper.sent {
+        justify-content: flex-end;
+    }
+    
+    .message-wrapper.received {
+        justify-content: flex-start;
+    }
+    
+    .message-bubble {
+        max-width: 60%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .message-bubble.sent {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    
+    .message-bubble.received {
+        background: #e9ecef;
+        color: #333;
+        border-bottom-left-radius: 4px;
+    }
+    
+    .message-username {
+        font-weight: bold;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+    
+    .message-bubble.sent .message-username {
+        color: #ffd700;
+    }
+    
+    .message-bubble.received .message-username {
+        color: #667eea;
+    }
+    
+    .message-text {
+        word-wrap: break-word;
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+    
+    .message-time {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        text-align: right;
+    }
+    
+    .chat-input-area {
+        padding: 20px;
+        background: white;
+        border-top: 2px solid #e9ecef;
+    }
+    
+    .chat-input-form {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-input {
+        flex: 1;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+    
+    .chat-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .send-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .send-button:hover {
+        transform: scale(1.05);
+    }
+    
+    .empty-chat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #999;
+    }
+    
+    .empty-chat i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <span>💬 @chatRoomName</span>
+        <a href="@Url.Action("Index")" class="btn btn-light btn-sm">← Back</a>
+    </div>
+    
+    <div class="chat-messages" id="messagesList">
+        @if (messages.Count == 0)
+        {
+            <div class="empty-chat">
+                <i class="bi bi-chat-dots"></i>
+                <p>No messages yet. Start the conversation!</p>
+            </div>
+        }
+        else
+        {
+            foreach (var msg in messages)
+            {
+                var isSent = msg.UserId == currentUserId;
+                <div class="message-wrapper @(isSent ? "sent" : "received")">
+                    <div class="message-bubble @(isSent ? "sent" : "received")">
+                        <div class="message-username">@msg.Username</div>
+                        <div class="message-text">@msg.Message</div>
+                        <div class="message-time">@msg.SentAt.ToString("hh:mm tt")</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+    <div class="chat-input-area">
+        <form id="messageForm" class="chat-input-form">
+            <input type="hidden" id="chatRoomId" value="@chatRoomId" />
+            <input type="text" id="messageInput" class="chat-input" placeholder="Type your message..." required autocomplete="off" />
+            <button type="submit" class="send-button">Send 📤</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        const currentUserId = '@currentUserId';
+        
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        const chatRoomId = document.getElementById("chatRoomId").value;
+
+        // Receive messages from server
+        connection.on("ReceiveMessage", function (username, message, time) {
+            const messagesList = document.getElementById("messagesList");
+            
+            // Remove empty chat message if exists
+            const emptyChat = messagesList.querySelector('.empty-chat');
+            if (emptyChat) {
+                emptyChat.remove();
+            }
+            
+            // Determine if message is sent or received
+            const isSent = username === '@User.Identity.Name';
+            
+            const messageWrapper = document.createElement("div");
+            messageWrapper.className = "message-wrapper " + (isSent ? "sent" : "received");
+            
+            messageWrapper.innerHTML = `
+                <div class="message-bubble ${isSent ? 'sent' : 'received'}">
+                    <div class="message-username">${username}</div>
+                    <div class="message-text">${message}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messagesList.appendChild(messageWrapper);
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
+
+        // Start connection
+        connection.start()
+            .then(function () {
+                console.log("SignalR connected");
+                return connection.invoke("JoinRoom", parseInt(chatRoomId));
+            })
+            .then(function() {
+                console.log("Joined room:", chatRoomId);
+            })
+            .catch(function (err) {
+                console.error("Error:", err);
+            });
+
+        // Send message
+        document.getElementById("messageForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            const message = document.getElementById("messageInput").value;
+            const chatRoomIdValue = document.getElementById("chatRoomId").value;
+
+            if (!message || message.trim() === '') {
+                return;
+            }
+
+            fetch('/ChatRooms/SendMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'chatRoomId=' + chatRoomIdValue + '&message=' + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("messageInput").value = '';
+                } else {
+                    alert("Error sending message");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+        
+        // Auto-scroll to bottom on page load
+        window.addEventListener('load', function() {
+            const messagesList = document.getElementById("messagesList");
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
+    </script>
+}

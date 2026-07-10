@@ -1,0 +1,311 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    var userName = ViewData["UserName"];
+    var recentComplaints = ViewData["RecentComplaints"] as List<Complaint>;
+    var recentNotifications = ViewData["RecentNotifications"] as List<Notification>;
+    var recentChatRooms = ViewData["RecentChatRooms"] as List<ChatRoom>;
+}
+
+<style>
+    .dashboard-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+
+    .stat-card-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stat-card-success {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .stat-card-info {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        opacity: 0.8;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .activity-item {
+        padding: 15px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .activity-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+
+    .quick-action-btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1><i class="bi bi-speedometer2"></i> Welcome back, @userName!</h1>
+        <p class="mb-0">Here is a summary of your activities</p>
+        <small>@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</small>
+    </div>
+
+    <!-- Statistics Cards Row -->
+    <div class="row mb-4">
+        <!-- Total Complaints -->
+        <div class="col-md-3 mb-3">
+            <div class="card dashboard-card stat-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-text stat-icon"></i>
+                    <div class="stat-number">@ViewData["TotalComplaints"]</div>
+                    <p class="mb-0">Total Complaints</p>
+                    <small>All time submissions</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending/In Progress -->
+        <div class="col-md-3 mb-3">
+            <div class="card dashboard-card stat-card-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-hourglass-split stat-icon"></i>
+                    <div class="stat-number">@((int)ViewData["PendingComplaints"] + (int)ViewData["InProgressComplaints"])</div>
+                    <p class="mb-0">Pending</p>
+                    <small>Awaiting resolution</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolved -->
+        <div class="col-md-3 mb-3">
+            <div class="card dashboard-card stat-card-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle stat-icon"></i>
+                    <div class="stat-number">@ViewData["ResolvedComplaints"]</div>
+                    <p class="mb-0">Resolved</p>
+                    <small>Successfully completed</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unread Notifications -->
+        <div class="col-md-3 mb-3">
+            <div class="card dashboard-card stat-card-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-bell stat-icon"></i>
+                    <div class="stat-number">@ViewData["UnreadNotifications"]</div>
+                    <p class="mb-0">New Notifications</p>
+                    <small>Unread messages</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-chat-dots text-primary" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@ViewData["ChatRoomsCount"]</h3>
+                    <p class="text-muted mb-0">Chat Rooms Joined</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-envelope text-success" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@ViewData["TotalMessages"]</h3>
+                    <p class="text-muted mb-0">Messages Sent</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-bell-fill text-warning" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@ViewData["TotalNotifications"]</h3>
+                    <p class="text-muted mb-0">Total Notifications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("Create", "Complaints")" class="btn btn-primary quick-action-btn">
+                        <i class="bi bi-plus-circle"></i> New Complaint
+                    </a>
+                    <a href="@Url.Action("Index", "ChatRooms")" class="btn btn-success quick-action-btn">
+                        <i class="bi bi-chat-dots"></i> My Chats
+                    </a>
+                    <a href="@Url.Action("Index", "Notifications")" class="btn btn-warning quick-action-btn">
+                        <i class="bi bi-bell"></i> Notifications
+                    </a>
+                    <a href="@Url.Action("Index", "Profile")" class="btn btn-info quick-action-btn">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Complaints -->
+        <div class="col-md-5 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Recent Complaints</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    @if (recentComplaints == null || !recentComplaints.Any())
+                    {
+                        <p class="text-muted text-center py-4">No complaints yet. Create your first one!</p>
+                    }
+                    else
+                    {
+                        foreach (var complaint in recentComplaints)
+                        {
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@complaint.Title</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> @complaint.CreatedAt.ToString("MMM dd, yyyy")
+                                        </small>
+                                    </div>
+                                    <span class="badge
+                                        @(complaint.Status == "Submitted" ? "bg-secondary" :
+                                          complaint.Status == "Pending" ? "bg-warning" :
+                                          complaint.Status == "InProgress" ? "bg-info" :
+                                          complaint.Status == "Resolved" ? "bg-success" : "bg-secondary")">
+                                        @complaint.Status
+                                    </span>
+                                </div>
+                                <small class="text-muted d-block mt-1">@complaint.Type</small>
+                                <a href="@Url.Action("Details", "Complaints", new { id = complaint.Id })" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                            </div>
+                        }
+                    }
+                    <a href="@Url.Action("Index", "Complaints")" class="btn btn-primary w-100 mt-3">
+                        View All Complaints <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications & Chat Rooms -->
+        <div class="col-md-4 mb-4">
+            <!-- Recent Notifications -->
+            <div class="card dashboard-card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-bell"></i> Recent Notifications</h5>
+                </div>
+                <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+                    @if (recentNotifications == null || !recentNotifications.Any())
+                    {
+                        <p class="text-muted text-center py-3">No notifications</p>
+                    }
+                    else
+                    {
+                        foreach (var notification in recentNotifications)
+                        {
+                            <div class="activity-item @(!notification.IsRead ? "border-warning" : "")">
+                                <div class="d-flex justify-content-between">
+                                    <strong>@notification.Title</strong>
+                                    @if (!notification.IsRead)
+                                    {
+                                        <span class="badge bg-danger">New</span>
+                                    }
+                                </div>
+                                <small class="text-muted">@notification.CreatedAt.ToString("MMM dd, hh:mm tt")</small>
+                            </div>
+                        }
+                    }
+                    <a href="@Url.Action("Index", "Notifications")" class="btn btn-warning w-100 mt-2">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Chat Rooms -->
+            <div class="card dashboard-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-chat-dots"></i> My Chat Rooms</h5>
+                </div>
+                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                    @if (recentChatRooms == null || !recentChatRooms.Any())
+                    {
+                        <p class="text-muted text-center py-3">No chat rooms joined</p>
+                    }
+                    else
+                    {
+                        foreach (var room in recentChatRooms)
+                        {
+                            <div class="activity-item">
+                                <h6>💬 @room.Name</h6>
+                                <a href="@Url.Action("Chat", "ChatRooms", new { id = room.Id })" class="btn btn-sm btn-success">
+                                    <i class="bi bi-box-arrow-in-right"></i> Open Chat
+                                </a>
+                            </div>
+                        }
+                    }
+                    <a href="@Url.Action("Index", "ChatRooms")" class="btn btn-success w-100 mt-2">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
