@@ -14,3 +14,6 @@ The system has two types of users, regular users and admins, and each sees a dif
 Regular users manage their own complaints while admins manage everything.
 
 Overall, this project makes it easier for communities to report problems and for authorities to respond to them in an organized and transparent way.
+
+Notite: Admin can only be registered inside a code, here is the path- CommunityReport\Controllers\UserAuthentication.cs
+After writing your own credintials and start to deburg. Start first with this link to register admin: https://localhost:7043/UserAuthentication/Reg
